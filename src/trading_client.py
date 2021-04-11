@@ -4,11 +4,19 @@ from client_argument_parser import parser
 import requests
 import constants
 import json
+import re
 from datetime import datetime
 
-# handling requests here
-URL="http://" + constants.IPADDRESS + ":" + constants.PORT
+IPADDRESS = constants.IPADDRESS
+PORT = constants.PORT
 formatter="%Y-%m-%d-%H:%M"
+def get_url(address, port):
+    return "http://" + address + ":" + port 
+URL=get_url(IPADDRESS, PORT)
+
+def address_input_validator(address):
+    return re.search("^\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d{1,5}$", address)
+
 def date_input_validator(date):
     try:
         datetime.strptime(date, formatter)
@@ -19,8 +27,11 @@ def date_input_validator(date):
 
 def get_price(date):
     try:
-        epoch = datetime.strptime(date, formatter).timestamp()
-        r = requests.get(URL+'/price/' + str(int(epoch)))
+        if (date == 'now'):
+            r = requests.get(URL+'/price/'+date)
+        else:
+            epoch = datetime.strptime(date, formatter).timestamp()
+            r = requests.get(URL+'/price/' + str(int(epoch)))
         # it converts to dictionary string
         dictionary = json.loads(r.text)
         # it converts dictionary string to dictionary
@@ -31,7 +42,7 @@ def get_price(date):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    if args.price and date_input_validator(args.price):
+    if args.price and (args.price == 'now' or date_input_validator(args.price)):
         output = get_price(args.price)
         for k, v in output.items():
             if len(v) != 0: 
@@ -44,8 +55,10 @@ if __name__ == '__main__':
 
     if args.signal:
         print(args.signal)
-    if args.server_address:
-        print(args.server_address)
+    if args.server_address and address_input_validator(args.server_address):
+        inp = args.server_address.split(':')
+        URL=get_url(inp[0], inp[1])
+        logging.info("Server address successfully setup")
     if args.del_ticker:
         print(args.del_ticker)
     if args.add_ticker:

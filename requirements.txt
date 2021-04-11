@@ -4,3 +4,5 @@ finnhub-python==2.4.0
 falcon==3.0.0
 gunicorn==20.1.0
 requests==2.25.1
+mailchimp3==3.0.14
+

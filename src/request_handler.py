@@ -11,6 +11,7 @@ import sqlite_connector
 from alpha_vantage.timeseries import TimeSeries
 from cmd import Cmd
 from os import walk, path
+import os
 
 def addAlphaTickerData(ticker, interval): 
     try:
@@ -26,6 +27,18 @@ def addAlphaTickerData(ticker, interval):
         logging.info("Generation successful!")
     except KeyboardInterrupt():
         pass
+    except Exception as e:
+        logging.error(e)
+
+def delAlphaTickerData(ticker):
+    try:
+        logging.info("Delete Ticker data from the database")
+        sqlite_connector.delete_ticker(ticker)
+        filepath = "out/" + ticker + ".csv"
+        if (os.path.exists("out/" + ticker + ".csv")):
+            os.remove(filepath)
+        else:
+            print("The file does not exist")
     except Exception as e:
         logging.error(e)
 
@@ -56,7 +69,7 @@ def get_current_prices(date):
             if (date == 'now'):
                 price = sqlite_connector.get_latest_prices(no_ext_name)
             else:
-                price = sqlite_connector.get_current_prices(date, no_ext_name)
+                price = sqlite_connector.get_current_prices(int(date), no_ext_name)
             tickers[no_ext_name] = price 
         return tickers 
     except Exception as e:
@@ -101,6 +114,24 @@ class Shell(Cmd):
         if (inp is None):
             print("please put get_current_prices $DATETIME")
         else:
-            data = get_current_prices(int(inp))
+            data = get_current_prices(inp)
             print(data)
+
+    def do_reload(self, inp):
+        if (inp is None):
+            print("please put get_current_prices $DATETIME")
+        else:
+            reload(inp)
+            
+    def do_delete_ticker(self, inp):
+        if (inp is None):
+            print("please put delete_ticker $TICKER")
+        else:
+            delAlphaTickerData(inp)
+
+    def do_list_all_tickers(self, inp):
+        tickers = list_all_tickers()
+        print(tickers)
+
+           
 

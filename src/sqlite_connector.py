@@ -5,11 +5,21 @@ import csv
 import constants
 from os import walk, path
 
+def delete_ticker(ticker):
+    try:
+        con = sqlite3.connect(constants.DATABASENAME)
+        cur = con.cursor()
+        cur.execute('DROP TABLE {}'.format(ticker))
+        con.commit()
+        con.close()
+    except Exception as e:
+        logging.error(e)
+
 def get_latest_prices(ticker):
     try:
         con = sqlite3.connect(constants.DATABASENAME)
         cur = con.cursor()
-        cur.execute('SELECT TOP 1 close from {}'.format(ticker))
+        cur.execute('SELECT close from {} limit 1'.format(ticker))
         rows = cur.fetchall() 
         con.close()
         return rows
@@ -37,6 +47,7 @@ def reload_data(filename):
         next(rows, None)
         no_ext_name = path.splitext(filename)[0]
         cur.execute("DROP TABLE {}".format(no_ext_name))
+        cur.execute("CREATE TABLE {} (timestamp, open, high, low, close, volume)".format(no_ext_name))
         cur.executemany("INSERT INTO {} VALUES (CAST(strftime('%s', ?) as integer), ?, ?, ?, ?, ?)".format(no_ext_name), rows)
         con.commit()
         con.close()

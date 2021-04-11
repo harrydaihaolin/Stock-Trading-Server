@@ -1,13 +1,15 @@
+from datetime import datetime
+import atexit
 import logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename="logs/server_log_{}.log".format(datetime.now(tz=None).strftime('%s')),level=logging.INFO)
 import sys
-import time
 import constants
 import request_handler
 import sqlite_connector 
 import falcon
 import gunicorn.app.base
 import multiprocessing
+import mail
 from os import walk
 from server_argument_parser import parser
 from rest_controller import Price
@@ -37,8 +39,14 @@ def run(port=8000):
     }
     api = falcon.API()
     api.add_route('/price/{timestamp}', Price())
-    TradingServer(api, options).run()
+    try:
+        TradingServer(api, options).run()
+    except Exception as e:
+        logging.error(e)
 
+def exit_handler():
+    mail.send_mail()
+atexit.register(exit_handler)
 
 if __name__ == '__main__':
     logging.info('processing arguments...')
@@ -70,5 +78,3 @@ if __name__ == '__main__':
         run(args.port)
     else:
         run()
-
-
