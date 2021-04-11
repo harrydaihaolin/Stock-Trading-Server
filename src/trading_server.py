@@ -35,7 +35,7 @@ def run(port=8000):
         'workers': number_of_workers(),
     }
     api = falcon.API()
-    api.add_route('/price', Price())
+    api.add_route('/price/{timestamp}', Price())
     TradingServer(api, options).run()
 
 
@@ -49,9 +49,14 @@ if __name__ == '__main__':
         valid_minutes = request_handler.get_valid_minutes(args.minutes)
     if (args.tickers):
        # load and process csv files
-       for ticker in args.tickers:
-            request_handler.addAlphaTickerData(ticker, valid_minutes)
+       if (len(args.tickers) > 3):
+           for i in range(0, 3):
+               request_handler.addAlphaTickerData(args.tickers[i], valid_minutes)
+       else:
+           for ticker in args.tickers:
+               request_handler.addAlphaTickerData(ticker, valid_minutes)
 #    if (args.reload):
+    logging.info("loading sqlite data through connector..")
     sqlite_connector.load_data()
     if (args.interactive):
         request_handler.Shell().cmdloop(constants.WELCOME)

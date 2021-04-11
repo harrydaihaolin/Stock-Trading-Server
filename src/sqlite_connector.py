@@ -9,7 +9,7 @@ def get_current_prices(date, ticker):
     try:
         con = sqlite3.connect(constants.DATABASENAME)
         cur = con.cursor()
-        cur.execute('SELECT close from {} where timestamp="{}"'.format(ticker, date))
+        cur.execute('SELECT close from {} where timestamp={}'.format(ticker, date))
         rows = cur.fetchall()
         con.close()
         return rows
@@ -19,17 +19,18 @@ def get_current_prices(date, ticker):
 def load_data():
     # load the data when starting the server
     try:
-        logging.info("loading the data to in-memory database")
+        logging.info("loading the data to local database")
         con = sqlite3.connect(constants.DATABASENAME)
         cur = con.cursor()
-        _, _, filenames = next(walk('../out/'))
+        _, _, filenames = next(walk('out/'))
         for filename in filenames:
-            f = open("../out/" + filename) 
+            f = open("out/" + filename) 
             rows = csv.reader(f)
             next(rows, None) # skip the headers
             no_ext_name = path.splitext(filename)[0] 
             cur.execute("CREATE TABLE {} (timestamp, open, high, low, close, volume)".format(no_ext_name))
-            cur.executemany("INSERT INTO {} VALUES (?, ?, ?, ?, ?, ?)".format(no_ext_name), rows)
+            # only storing epoch value for better comparison
+            cur.executemany("INSERT INTO {} VALUES (CAST(strftime('%s', ?) as integer), ?, ?, ?, ?, ?)".format(no_ext_name), rows)
         con.commit()
         con.close()
         logging.info("data successfully loaded")

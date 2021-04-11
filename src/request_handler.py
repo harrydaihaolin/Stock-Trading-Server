@@ -2,7 +2,7 @@ import logging
 logging = logging.getLogger()
 import constants
 import sys
-import datetime
+from datetime import datetime
 import finnhub
 import csv
 import signal
@@ -19,7 +19,7 @@ def addAlphaTickerData(ticker, interval):
         data, _ = ts.get_intraday(symbol=ticker, interval=interval+'min', outputsize='full')
 
         logging.info("Generating {}.csv".format(ticker)) 
-        with open('../out/' + ticker + ".csv", 'w') as write_csvfile:
+        with open('out/' + ticker + ".csv", 'w') as write_csvfile:
             writer = csv.writer(write_csvfile, dialect='excel')
             for row in data:
                 writer.writerow(row)
@@ -30,7 +30,7 @@ def addAlphaTickerData(ticker, interval):
         logging.error(e)
 
 def list_all_tickers():
-    _, _, filenames = next(walk('../out/'))
+    _, _, filenames = next(walk('out/'))
     for s in filenames:
         print(s)
     return filenames
@@ -95,11 +95,9 @@ class Shell(Cmd):
             print(json.dumps(data))
 
     def do_get_current_prices(self, inp):
-        parser = inp.split(' ')
-        if (len(parser) != 2):
+        if (inp is None):
             print("please put get_current_prices $DATETIME")
         else:
-            date = parser[0] + ' ' + parser[1]
-            data = get_current_prices(date)
+            data = get_current_prices(int(inp))
             print(data)
 
