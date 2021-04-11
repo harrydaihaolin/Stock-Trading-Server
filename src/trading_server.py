@@ -8,6 +8,7 @@ import sqlite_connector
 import falcon
 import gunicorn.app.base
 import multiprocessing
+from os import walk
 from server_argument_parser import parser
 from rest_controller import Price
 
@@ -27,7 +28,7 @@ class TradingServer(gunicorn.app.base.BaseApplication):
         return self.application
 
 def number_of_workers():
-    return (multiprocessing.cpu_count() * 2) + 1
+    return multiprocessing.cpu_count()
 
 def run(port=8000):
     options = {
@@ -55,7 +56,11 @@ if __name__ == '__main__':
        else:
            for ticker in args.tickers:
                request_handler.addAlphaTickerData(ticker, valid_minutes)
-#    if (args.reload):
+    if (args.reload):
+        _, _, filenames = next(walk('out/'))
+        for filename in filenames:
+            if (filename == args.reload):
+                request_handler.reload(filename)
     logging.info("loading sqlite data through connector..")
     sqlite_connector.load_data()
     if (args.interactive):
@@ -65,5 +70,5 @@ if __name__ == '__main__':
         run(args.port)
     else:
         run()
- 
+
 

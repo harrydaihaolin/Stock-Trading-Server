@@ -6,13 +6,6 @@ from datetime import datetime
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
 
-def date_parser(date):
-    try:
-        date = datetime.fromisoformat(date)    
-        return date;
-    except ValueError as e:
-        print(e)
-
 try:
     parser.add_argument("-p", "--price", help=constants.PRICEHELP)
     parser.add_argument("-s", "--signal", help=constants.SIGNALHELP)

@@ -31,8 +31,6 @@ def addAlphaTickerData(ticker, interval):
 
 def list_all_tickers():
     _, _, filenames = next(walk('out/'))
-    for s in filenames:
-        print(s)
     return filenames
 
 def get_stock_quote(ticker):
@@ -50,17 +48,22 @@ def get_valid_minutes(minutes):
        return '5'
 
 def get_current_prices(date):
-    prices = []
+    tickers = {} 
     filenames = list_all_tickers()
     try:
         for filename in filenames:
             no_ext_name = path.splitext(filename)[0] 
-            logging.info(no_ext_name)
-            prices.append(sqlite_connector.get_current_prices(date, no_ext_name))
-        return prices
+            if (date == 'now'):
+                price = sqlite_connector.get_latest_prices(no_ext_name)
+            else:
+                price = sqlite_connector.get_current_prices(date, no_ext_name)
+            tickers[no_ext_name] = price 
+        return tickers 
     except Exception as e:
         logging.error(e)
-        
+
+def reload(filename):
+    sqlite_connector.reload_data(filename)
 
 # interactive console for testing purposes
 class Shell(Cmd):

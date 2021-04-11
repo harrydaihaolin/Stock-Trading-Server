@@ -5,6 +5,17 @@ import csv
 import constants
 from os import walk, path
 
+def get_latest_prices(ticker):
+    try:
+        con = sqlite3.connect(constants.DATABASENAME)
+        cur = con.cursor()
+        cur.execute('SELECT TOP 1 close from {}'.format(ticker))
+        rows = cur.fetchall() 
+        con.close()
+        return rows
+    except Exception as e:
+        logging.error(e)
+
 def get_current_prices(date, ticker):
     try:
         con = sqlite3.connect(constants.DATABASENAME)
@@ -15,6 +26,23 @@ def get_current_prices(date, ticker):
         return rows
     except Exception as e:
         print(e)
+
+def reload_data(filename):
+    try:
+        logging.info("reloading the data from {}".format(filename))
+        con = sqlite3.connect(constants.DATABASENAME)
+        cur = con.cursor()
+        f = open("out/" + filename)
+        rows = csv.reader(f)
+        next(rows, None)
+        no_ext_name = path.splitext(filename)[0]
+        cur.execute("DROP TABLE {}".format(no_ext_name))
+        cur.executemany("INSERT INTO {} VALUES (CAST(strftime('%s', ?) as integer), ?, ?, ?, ?, ?)".format(no_ext_name), rows)
+        con.commit()
+        con.close()
+        logging.info("data successfully loaded")
+    except Exception as e:
+        logging.error(e)
 
 def load_data():
     # load the data when starting the server
