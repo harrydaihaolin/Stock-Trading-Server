@@ -52,7 +52,7 @@ def run(port=8000):
 def exit_handler():
     logging.info("sending emails before shut down...")
     mail.send_mail()
-
+atexit.register(exit_handler)
 if __name__ == '__main__':
     logging.info('processing arguments...')
     args = parser.parse_args()
@@ -78,7 +78,6 @@ if __name__ == '__main__':
     if (args.interactive):
         request_handler.Shell().cmdloop(constants.WELCOME)
         sys.exit(0)
-    atexit.register(exit_handler)
     request_handler.loadDataToDatabase()
     _, _, filenames = next(walk('out/'))
     load = True
