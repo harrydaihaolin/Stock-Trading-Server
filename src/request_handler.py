@@ -120,36 +120,35 @@ def tradingStrategy(ticker):
     price_inp = []
     avg = 0.0
     rolling_data = sqlite_connector.get_rolling_data(ticker)
-    container = []
-    for rd in rolling_data:
-        avg = avg + float(rd[1])
-        container.append(float(rd[1]))
-    if len(rolling_data) != 0:
-        avg = avg / len(rolling_data)
-
-    sigma = statistics.stdev(container)
-    
-    pnl = 0.0
-    for i in range(1, len(rolling_data)):
-        tmp=[]
-        tmp.append(rolling_data[i][0]) # timestamp
-        price = rolling_data[i][1]
-        last_price = rolling_data[i-1][1]
-        tmp.append(price)
-        price_inp.append(tmp)
-            
-        if (float(price) > (avg + sigma)):
-            tmp.append(1)
-            pnl = float(price) - float(last_price) 
-            tmp.append(pnl)
-        elif (float(price) < (avg - sigma)):
-            tmp.append(-1)
-            pnl = float(last_price) - float(price)
-            tmp.append(pnl)
-        else:
-            tmp.append(0)
-            tmp.append(0)
-        inp.append(tmp)
+    if rolling_data is not None:
+        container = []
+        for rd in rolling_data:
+            avg = avg + float(rd[1])
+            container.append(float(rd[1]))
+        if len(rolling_data) != 0:
+            avg = avg / len(rolling_data)
+        sigma = statistics.stdev(container)
+        pnl = 0.0
+        for i in range(1, len(rolling_data)):
+            tmp=[]
+            tmp.append(rolling_data[i][0]) # timestamp
+            price = rolling_data[i][1]
+            last_price = rolling_data[i-1][1]
+            tmp.append(price)
+            price_inp.append(tmp)
+                
+            if (float(price) > (avg + sigma)):
+                tmp.append(1)
+                pnl = float(price) - float(last_price) 
+                tmp.append(pnl)
+            elif (float(price) < (avg - sigma)):
+                tmp.append(-1)
+                pnl = float(last_price) - float(price)
+                tmp.append(pnl)
+            else:
+                tmp.append(0)
+                tmp.append(0)
+            inp.append(tmp)
 
     logging.info("generating {}_result.csv".format(ticker))
     with open('out/{}_result.csv'.format(ticker), 'w') as write_csvfile:
@@ -248,4 +247,11 @@ class Shell(Cmd):
             print("please put get_signal $TIMESTAMP")
         else:
             r = get_signal(inp)
+            print(r)
+
+    def do_get_rolling_data(self, inp):
+        if (inp is None):
+            print("please put get_rolling_data $TICKER")
+        else:
+            r = sqlite_connector.get_rolling_data(inp)
             print(r)
