@@ -17,10 +17,10 @@ python3 src/trading_server.py
 ```
 
 ## Deploy in Windows environment 
-- wip
+- In Windows, please install waitress, platform specific support is still work in progress
 
 ## Deploy in Docker environment
-- wip
+-  
 
 ## Run the interactive console
 ```sh
