@@ -32,7 +32,7 @@ def get_rolling_data(ticker):
     try:
         con = sqlite3.connect(constants.DATABASENAME)
         cur = con.cursor()
-        cur.execute('SELECT timestamp, close FROM {} LIMIT 160'.format(ticker))
+        cur.execute('SELECT timestamp, close FROM {}'.format(ticker))
         rolling_data = cur.fetchall()
         con.close()
         return rolling_data
@@ -44,7 +44,7 @@ def get_sigma(ticker):
         con = sqlite3.connect(constants.DATABASENAME)
         cur = con.cursor()
         # there are 160 timestamps within 24 hours
-        cur.execute('SELECT close FROM {} LIMIT 160'.format(ticker))
+        cur.execute('SELECT close FROM {}'.format(ticker))
         all_prices = cur.fetchall()
         con.close()
         return all_prices

@@ -60,7 +60,7 @@ if __name__ == '__main__':
     valid_minutes = '5' 
     # actions on argument 
     if (args.minutes):
-        valid_minutes = request_handler.get_valid_minutes(args.minutes)
+        valid_minutes = request_handler.get_valid_minutes(args.minutes) 
     if (args.tickers):
        # load and process csv files
        if (len(args.tickers) > 3):

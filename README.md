@@ -48,4 +48,4 @@ python3 src/trading_client.py --server_address 127.0.0.1:8080
 ```
 
 ## Comments on trading strategy
-This trading strategy is a trend following strategy. Gathering the historical data can be misleading since we don't know if the market is going to jump or just turn back. Especially at the start of a new trend. Instead, in the long run, the profit would be relatively more stable than Mean Reversion strategies since we the trend would be clearer as time goes by.
+This trading strategy is a trend following strategy. Gathering the historical data can be misleading since we don't know if the market is going to jump or just turn back. Especially at the start of a new trend. Instead, in the long run, the profit would be relatively more stable than Mean Reversion strategies since the trend would be clearer as time goes by.

@@ -4,6 +4,7 @@ import constants
 import sys
 from datetime import datetime
 import finnhub
+import time
 import statistics
 import csv
 import signal
@@ -73,10 +74,21 @@ def list_all_tickers():
     _, _, filenames = next(walk('out/'))
     return filenames
 
+def load_all_quotes():
+    logging.info("loading the latest quote data")
+    _, _, filenames = next(walk('out/'))
+    for filename in filenames:
+        no_ext_name = path.splitext(filename)[0] 
+        if ("result" not in no_ext_name and "price" not in no_ext_name):
+            get_stock_quote(no_ext_name)
+
 def get_stock_quote(ticker):
     try:
         finnhub_client = finnhub.Client(api_key=constants.FINNHUBKEY)
         res = finnhub_client.quote(ticker)
+        with open('out/{}_quote.csv'.format(ticker), 'a') as write_csvfile:
+            writer = csv.writer(write_csvfile, dialect='excel') 
+            writer.writerow(res.values())
         return res
     except Exception as e:
         logging.error(e)
@@ -261,3 +273,4 @@ class Shell(Cmd):
         else:
             r = sqlite_connector.get_rolling_data(inp)
             print(r)
+
