@@ -63,7 +63,7 @@ def del_ticker(ticker):
 
 def add_ticker(ticker):
     try:
-        rsp = requests.post(URL+'/del_ticker', {'ticker': ticker})
+        rsp = requests.post(URL+'/add_ticker', {'ticker': ticker})
         logging.info(rsp)
     except Exception as e:
         logging.error(e)
