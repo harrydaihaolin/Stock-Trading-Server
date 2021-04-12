@@ -56,14 +56,14 @@ def get_price(date):
 
 def del_ticker(ticker):
     try:
-        rsp = requests.post(URL+'/del_ticker', {'ticker': ticker})
+        rsp = requests.get(URL+'/del_ticker/{}'.format(ticker))
         logging.info(rsp)
     except Exception as e:
         logging.error(e)
 
 def add_ticker(ticker):
     try:
-        rsp = requests.post(URL+'/add_ticker', {'ticker': ticker})
+        rsp = requests.get(URL+'/add_ticker/{}'.format(ticker))
         logging.info(rsp)
     except Exception as e:
         logging.error(e)
