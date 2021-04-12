@@ -1,5 +1,8 @@
 # Trading Server Developer Instructions
 
+## File Structure Diagram
+![file structure](https://user-images.githubusercontent.com/13538182/114333193-c06e3a80-9b15-11eb-8b7b-63344f63ec95.png)
+
 ## Install Dependencies 
 ```sh
 pip3 install -r requirements.txt
