@@ -25,6 +25,19 @@ def date_input_validator(date):
     except ValueError as e:
         logging.error(e)
 
+def get_signal(date):
+    try:
+        if (date == 'now'):
+            r = requests.get(URL+'/signal/'+date)
+        else:
+            epoch = datetime.strptime(date, formatter).timestamp()
+            r = requests.get(URL+'/signal/'+ str(int(epoch)))
+        dictionary = json.loads(r.text)
+        dictionary = json.loads(dictionary)
+        return dictionary
+    except Exception as e:
+        logging.error(e)
+
 def get_price(date):
     try:
         if (date == 'now'):
@@ -44,17 +57,24 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.price and (args.price == 'now' or date_input_validator(args.price)):
         output = get_price(args.price)
-        for k, v in output.items():
-            if len(v) != 0: 
-                print(k, v[0][0]) 
-            else: 
-                print(k, "No Data")
-    elif args.price == 'now':
-        # some code here
-        pass
-
-    if args.signal:
-        print(args.signal)
+        if (output is None):
+            print("Server has no data")
+        else:
+            for k, v in output.items():
+                if len(v) != 0: 
+                    print(k, v[0][0]) 
+                else: 
+                    print(k, "No Data")
+    if args.signal and (args.signal == 'now' or date_input_validator(args.signal)):
+        output = get_signal(args.signal)
+        if (output is None):
+            print("Server has no data")
+        else:
+            for k, v in output.items():
+                if len(v) != 0:
+                    print(k, v[0][0])
+                else:
+                    print(k, "No Data")
     if args.server_address and address_input_validator(args.server_address):
         inp = args.server_address.split(':')
         URL=get_url(inp[0], inp[1])

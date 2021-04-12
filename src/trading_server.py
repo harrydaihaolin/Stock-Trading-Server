@@ -1,7 +1,7 @@
 from datetime import datetime
-import atexit
 import logging
 logging.basicConfig(filename="logs/server_log_{}.log".format(datetime.now(tz=None).strftime('%s')),level=logging.INFO)
+import atexit
 import sys
 import constants
 import request_handler
@@ -12,7 +12,7 @@ import multiprocessing
 import mail
 from os import walk
 from server_argument_parser import parser
-from rest_controller import Price
+from rest_controller import Price, AddTicker, DelTicker
 
 class TradingServer(gunicorn.app.base.BaseApplication):
     def __init__(self, app, options=None):
@@ -30,23 +30,26 @@ class TradingServer(gunicorn.app.base.BaseApplication):
         return self.application
 
 def number_of_workers():
-    return multiprocessing.cpu_count()
+   return 2 * multiprocessing.cpu_count() + 1 
 
 def run(port=8000):
     options = {
         'bind': '{}:{}'.format('127.0.0.1', port),
         'workers': number_of_workers(),
+        'keepalive': 5
     }
-    api = falcon.API()
+    api = falcon.App()
     api.add_route('/price/{timestamp}', Price())
+    api.add_route('/add_ticker/{ticker}', AddTicker())
+    api.add_route('/del_ticker/{ticker}', DelTicker())
     try:
         TradingServer(api, options).run()
     except Exception as e:
         logging.error(e)
 
 def exit_handler():
+    logging.info("sending emails before shut down...")
     mail.send_mail()
-atexit.register(exit_handler)
 
 if __name__ == '__main__':
     logging.info('processing arguments...')
@@ -70,10 +73,19 @@ if __name__ == '__main__':
             if (filename == args.reload):
                 request_handler.reload(filename)
     logging.info("loading sqlite data through connector..")
-    sqlite_connector.load_data()
     if (args.interactive):
         request_handler.Shell().cmdloop(constants.WELCOME)
         sys.exit(0)
+    atexit.register(exit_handler)
+    request_handler.loadDataToDatabase()
+    _, _, filenames = next(walk('out/'))
+    load = True
+    for filename in filenames:
+        if ("result" in filename):
+            load = False
+    if load:
+        request_handler.loadTradingStrategy()
+    request_handler.loadDataToDatabase()
     if (args.port):
         run(args.port)
     else:
