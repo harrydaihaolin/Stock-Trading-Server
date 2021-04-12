@@ -20,5 +20,7 @@ class Signal(object):
     def on_get(self, req, resp, timestamp):
         resp.media = json.dumps(request_handler.get_signal(timestamp))
 
-
-
+class Reset(object):
+    def on_get(self, req, resp):
+        request_handler.reset() 
+        resp.media={'status': 'success'}

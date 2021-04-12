@@ -120,9 +120,15 @@ def load_data():
             rows = csv.reader(f)
             next(rows, None) # skip the headers
             no_ext_name = path.splitext(filename)[0] 
-            cur.execute("CREATE TABLE {} (timestamp, open, high, low, close, volume)".format(no_ext_name))
-            # only storing epoch value for better comparison
-            cur.executemany("INSERT INTO {} VALUES (CAST(strftime('%s', ?) as integer), ?, ?, ?, ?, ?)".format(no_ext_name), rows)
+            if "price" in no_ext_name:
+                cur.execute("CREATE TABLE {} (timestamp, price)".format(no_ext_name))
+                cur.executemany("INSERT INTO {} VALUES (CAST(strftime('%s', ?) as integer), ?)", rows)
+            elif "result" in no_ext_name:
+                cur.execute("CREATE TABLE {} (timestamp, price, signal, pnl)".format(no_ext_name))
+                cur.executemany("INSERT INTO {} VALUES (CAST(strftime('%s', ?) as integer), ?, ?, ?)", rows)
+            else:
+                cur.execute("CREATE TABLE {} (timestamp, open, high, low, close, volume)".format(no_ext_name))
+                cur.executemany("INSERT INTO {} VALUES (CAST(strftime('%s', ?) as integer), ?, ?, ?, ?, ?)".format(no_ext_name), rows)
         con.commit()
         con.close()
         logging.info("data successfully loaded")

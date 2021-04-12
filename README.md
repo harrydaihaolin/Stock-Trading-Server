@@ -13,12 +13,6 @@ python3 src/trading_server.py -h
 python3 src/trading_client.py -h
 ```
 
-## Deploy in Linux/Mac environment
-- get the help text
-```sh
-python3 src/trading_server.py
-```
-
 ## Deploy in Windows environment 
 - In Windows, please install waitress, platform specific support is still work in progress
 

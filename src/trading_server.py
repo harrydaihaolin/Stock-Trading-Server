@@ -12,7 +12,7 @@ import multiprocessing
 import mail
 from os import walk
 from server_argument_parser import parser
-from rest_controller import Price, AddTicker, DelTicker
+from rest_controller import Price, AddTicker, DelTicker, Signal, Reset
 
 class TradingServer(gunicorn.app.base.BaseApplication):
     def __init__(self, app, options=None):
@@ -42,6 +42,8 @@ def run(port=8000):
     api.add_route('/price/{timestamp}', Price())
     api.add_route('/add_ticker/{ticker}', AddTicker())
     api.add_route('/del_ticker/{ticker}', DelTicker())
+    api.add_route('/signal/{timestamp}', Signal())
+    api.add_route('/reset', Reset())
     try:
         TradingServer(api, options).run()
     except Exception as e:

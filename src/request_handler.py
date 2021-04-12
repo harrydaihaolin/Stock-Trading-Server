@@ -47,10 +47,11 @@ def get_signal(timestamp):
         for filename in filenames:
             no_ext_name = path.splitext(filename)[0] 
             if 'result' in no_ext_name:
+                print(no_ext_name)
                 if (timestamp == 'now'):
                     signal = sqlite_connector.get_latest_signal(no_ext_name)
                 else:
-                    signal = sqlite_connector.get_signal(int(timestamp), no_ext_name)
+                    signal = sqlite_connector.get_signal(timestamp, no_ext_name)
                 tickers[no_ext_name] = signal
         return tickers
     except Exception as e:
@@ -172,6 +173,11 @@ def loadTradingStrategy():
 
 def reload(filename):
     sqlite_connector.reload_data(filename)
+
+def reset():
+    _, _, filenames = next(walk('out/'))
+    for filename in filenames:   
+        reload(filename)
 
 # interactive console for testing purposes
 class Shell(Cmd):

@@ -52,7 +52,7 @@ def customized_template(html_code, campaign_id, client=client):
                 data={'message': 'Campaign message', 'html': string_template}
                 )
     except Exception as error:
-        print(error)
+        logging.error(error)
 
 
 def send_mail(client=client):      

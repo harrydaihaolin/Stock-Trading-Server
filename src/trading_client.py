@@ -3,6 +3,7 @@ logging.basicConfig(level=logging.INFO)
 from client_argument_parser import parser 
 import requests
 import constants
+import sys
 import json
 import re
 from datetime import datetime
@@ -32,9 +33,9 @@ def get_signal(date):
         else:
             epoch = datetime.strptime(date, formatter).timestamp()
             r = requests.get(URL+'/signal/'+ str(int(epoch)))
-        dictionary = json.loads(r.text)
-        dictionary = json.loads(dictionary)
-        return dictionary
+        r = json.loads(r.text)
+        r = json.loads(r)
+        return r
     except Exception as e:
         logging.error(e)
 
@@ -51,7 +52,33 @@ def get_price(date):
         dictionary = json.loads(dictionary)
         return dictionary
     except Exception as e:
-        print(e)
+        logging.error(e)
+
+def del_ticker(ticker):
+    try:
+        rsp = requests.post(URL+'/del_ticker', {'ticker': ticker})
+        logging.info(rsp)
+    except Exception as e:
+        logging.error(e)
+
+def add_ticker(ticker):
+    try:
+        rsp = requests.post(URL+'/del_ticker', {'ticker': ticker})
+        logging.info(rsp)
+    except Exception as e:
+        logging.error(e)
+
+def reset():
+    try:
+        rsp = requests.get(URL+'/reset')
+        rsp = json.loads(rsp.text)
+        logging.info(rsp)
+        if (rsp['status'] == 'success'):
+            return 0
+        else:
+            return 1
+    except Exception as e:
+        logging.error(e)
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -80,11 +107,14 @@ if __name__ == '__main__':
         URL=get_url(inp[0], inp[1])
         logging.info("Server address successfully setup")
     if args.del_ticker:
-        print(args.del_ticker)
+        inp = args.del_ticker
+        del_ticker(inp)
     if args.add_ticker:
-        print(args.add_ticker)
+        inp = args.add_ticker
+        add_ticker(inp)
     if args.reset:
-        print(args.reset)
+        code = reset() 
+        sys.exit(code)
     # actions on argument 
 
 
