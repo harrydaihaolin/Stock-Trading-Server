@@ -25,8 +25,9 @@ python3 src/trading_server.py -i
 ```
 
 ## Load the data with ticker and interval then start the server
-- example:
+- example: (out/ directory is for the output of trading_server)
 ```sh
+mkdir out
 python3 src/trading_server.py -t MSFT AAPL NIO -m 5 -p 8080
 ```
 or
