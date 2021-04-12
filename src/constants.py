@@ -1,20 +1,7 @@
 #!/usr/bin/python3
 
-
-#MAILCHIMPAPIAUDIENCES = {
-#    "audience_name" : "ENTER AUDIENCE NAME",
-#    "company" : "ENTER COMPANY NAME",
-#    "address1" : "ENTER ADDRESS",
-#    "city" :  "ENTER CITY",
-#    "state" : "ENTER STATE", # EX: Western Province
-#    "zip_code" : "00300",
-#    "country" : "ENTER COUNTRY", # EX: LK
-#    "from_name" : "ENTER FROM NAME",
-#    "from_email" : "ENTER FROM EMAIL",
-#    "language" : "en"
-#}
-MAILCHIMPAPI="2a907db21ce88081b461c895237f34bd-us1"
-MAILCHIMPUSENAME="Haolin Dai"
+MAILCHIMPAPI=""
+MAILCHIMPUSENAME=""
 PORT="8000"
 IPADDRESS="127.0.0.1"
 ALPHAADVANTAGEKEY="6C6ZLWQNT2LK5OJG"
